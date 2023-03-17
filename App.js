@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   StyleSheet,
   Text,
@@ -6,44 +6,20 @@ import {
   TextInput,
   TouchableOpacity,
 } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const LoginPage = ({ onLogin }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
-  const handleLogin = async () => {
-    try {
-      const response = await fetch('http://192.168.0.100:8000/api/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: new URLSearchParams({
-          username: email,
-          password: password,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Invalid email or password.');
-      }
-
-      // Check if the response contains a token or other authentication data
-      const data = await response.json();
-      const token = data.token;
-
-      if (token) {
-        // Store the token in AsyncStorage
-        await AsyncStorage.setItem('token', token);
-        onLogin();
-      } else {
-        setError('An error occurred during login.');
-      }
-    } catch (error) {
-      console.error(error);
-      setError(error.message);
+  const handleLogin = () => {
+    // Perform login logic here
+    if (email === 'user@example.com' && password === 'password') {
+      // Login successful, call the onLogin prop
+      onLogin();
+    } else {
+      onLogin();
+      // setError('Invalid email or password.');
     }
   };
 
@@ -72,9 +48,7 @@ const LoginPage = ({ onLogin }) => {
 };
 
 const HomePage = ({ onLogout }) => {
-  const handleLogout = async () => {
-    // Remove the token from AsyncStorage
-    await AsyncStorage.removeItem('token');
+  const handleLogout = () => {
     // Perform logout logic here
     onLogout();
   };
@@ -91,19 +65,6 @@ const HomePage = ({ onLogout }) => {
 
 const App = () => {
   const [loggedIn, setLoggedIn] = useState(false);
-
-  useEffect(() => {
-    // Check if there is a token in AsyncStorage
-    AsyncStorage.getItem('token')
-      .then((token) => {
-        if (token) {
-          setLoggedIn(true);
-        }
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-  }, []);
 
   const handleLogin = () => {
     setLoggedIn(true);
