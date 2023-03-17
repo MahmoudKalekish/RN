@@ -5,6 +5,7 @@ import {
   View,
   TextInput,
   TouchableOpacity,
+  ActivityIndicator,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -12,13 +13,22 @@ const LoginPage = ({ onLogin }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleLogin = async () => {
+    if (!email || !password) {
+      setError('Please enter your email and password.');
+      return;
+    }
+
+    setIsLoading(true);
+
     try {
-      const response = await fetch('http://192.168.0.100:8000/api/login', {
+      const response = await fetch('https://financialapp-backend.up.railway.app/api/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
+          Accept: 'application/json',
         },
         body: new URLSearchParams({
           username: email,
@@ -44,6 +54,8 @@ const LoginPage = ({ onLogin }) => {
     } catch (error) {
       console.error(error);
       setError(error.message);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -64,7 +76,11 @@ const LoginPage = ({ onLogin }) => {
         secureTextEntry={true}
       />
       <TouchableOpacity style={styles.button} onPress={handleLogin}>
-        <Text style={styles.buttonText}>Login</Text>
+        {isLoading ? (
+          <ActivityIndicator size="small" color="#fff" />
+        ) : (
+          <Text style={styles.buttonText}>Login</Text>
+        )}
       </TouchableOpacity>
       <Text style={styles.error}>{error}</Text>
     </View>
