@@ -24,19 +24,19 @@ const LoginPage = ({ onLogin }) => {
     setIsLoading(true);
 
     try {
-      const response = await fetch('https://financialapp-backend.up.railway.app/api/login', {
+      const response = await fetch('http://192.168.1.108:8000/api/login', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
+          'Content-Type': 'application/json',
           Accept: 'application/json',
         },
-        body: new URLSearchParams({
+        body: JSON.stringify({
           username: email,
           password: password,
         }),
       });
 
-      if (!response.ok) {
+      if (response.status < 200 || response.status >= 300) {
         throw new Error('Invalid email or password.');
       }
 
@@ -104,7 +104,6 @@ const HomePage = ({ onLogout }) => {
     </View>
   );
 };
-
 const App = () => {
   const [loggedIn, setLoggedIn] = useState(false);
 
@@ -177,3 +176,6 @@ const styles = StyleSheet.create({
 });
 
 export default App;
+
+
+
